@@ -1,0 +1,64 @@
+<div class="chat-container">
+  @if (!isUsernameSet()) {
+    <div class="username-form">
+      <h2>Введите ваше имя</h2>
+      <div class="input-group">
+        <input
+          type="text"
+          [value]="username()"
+          (input)="username.set($any($event.target).value)"
+          (keyup.enter)="setUsername()"
+          placeholder="Ваше имя"
+          class="username-input"
+        />
+        <button (click)="setUsername()" class="submit-btn">Войти в чат</button>
+      </div>
+    </div>
+  } @else {
+    <div class="chat-wrapper">
+      <div class="chat-header">
+        <h2>Чат</h2>
+        <div class="connection-status" [class.connected]="isConnected()">
+          {{ isConnected() ? 'Подключено' : 'Отключено' }}
+        </div>
+      </div>
+      
+      <div class="messages-container">
+        @if (messages().length === 0) {
+          <div class="empty-state">
+            <p>Пока нет сообщений. Начните общение!</p>
+          </div>
+        } @else {
+          @for (msg of messages(); track msg.timestamp) {
+            <div class="message">
+              <div class="message-header">
+                <span class="username">{{ msg.username }}</span>
+                <span class="timestamp">{{ msg.timestamp | date: 'HH:mm:ss' }}</span>
+              </div>
+              <div class="message-text">{{ msg.message }}</div>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="message-input-container">
+        <input
+          type="text"
+          [value]="messageText()"
+          (input)="messageText.set($any($event.target).value)"
+          (keyup)="onKeyPress($event)"
+          placeholder="Введите сообщение..."
+          class="message-input"
+        />
+        <button 
+          (click)="sendMessage()" 
+          [disabled]="!messageText().trim() || !isConnected()"
+          class="send-btn"
+        >
+          Отправить
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
